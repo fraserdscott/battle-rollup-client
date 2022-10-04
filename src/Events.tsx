@@ -4,8 +4,6 @@ import { ethers } from "ethers";
 import { useEffect, useState } from 'react';
 import { abi } from "./out/Rollup.sol/Rollup.json";
 
-const formatAddress = (a: string) => `${a.slice(0, 10)}...`
-
 const Events = () => {
   const [events, setEvents] = useState([]);
 
@@ -35,8 +33,8 @@ const Events = () => {
         <tr>
           <td>{a.event}</td>
           <td>{a.blockNumber}</td>
-          <td>{a.args.from ? formatAddress(a.args.from) : "N/A"}</td>
-          <td>{a.args.to ? formatAddress(a.args.to) : "N/A"}</td>
+          <td>{a.args.from ? a.args.from : "N/A"}</td>
+          <td>{a.args.to ? (a.event === "Transfer" ? a.args.to.slice(0, 2) + a.args.to.slice(26) : a.args.to) : "N/A"}</td>
           <td>{a.args.value ? ethers.utils.formatEther(a.args.value) : "N/A"}</td>
         </tr>
       )}

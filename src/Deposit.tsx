@@ -30,8 +30,8 @@ const getSourceBalance = async () => {
   return signer.getBalance();
 }
 
-const getRollupBalance = async () => {
-  // @ts-ignore
+export const getBalances = async () => {
+  //@ts-ignore
   const provider = new ethers.providers.Web3Provider(window.ethereum)
 
   const signer = provider.getSigner()
@@ -42,34 +42,51 @@ const getRollupBalance = async () => {
 
   let balances: Record<string, BigNumber> = {};
   events.map(e => {
-    if (!balances[e.args.from]) {
-      balances[e.args.from] = BigNumber.from(0);
-    }
 
     if (e.event === "Deposit") {
-      if (!balances[e.args.to]) {
-        balances[e.args.to] = BigNumber.from(0);
-      }
-
-      balances[e.args.to] = balances[e.args.to].add(BigNumber.from(e.args.value));
-    } else if (e.event === "Transfer") {
-      const to = e.args.to.slice(0, 2) + e.args.to.slice(26);
-
+      const to = e.args.to.toLowerCase();
       if (!balances[to]) {
         balances[to] = BigNumber.from(0);
       }
 
-      const value = BigNumber.from(e.args.value);
+      balances[to] = balances[to].add(BigNumber.from(e.args.value));
+    } else {
 
-      if (balances[e.args.from].gte(value)) {
-        balances[e.args.from] = balances[e.args.from].sub(value);
-        balances[to] = balances[to].add(value);
+      const from = e.args.from.toLowerCase();
+      if (!balances[from]) {
+        balances[from] = BigNumber.from(0);
+      }
+      if (e.event === "Transfer") {
+        const to = (e.args.to.slice(0, 2) + e.args.to.slice(26)).toLowerCase();
+
+        if (!balances[to]) {
+          balances[to] = BigNumber.from(0);
+        }
+
+        const value = BigNumber.from(e.args.value);
+
+        if (balances[from].gte(value)) {
+          balances[from] = balances[from].sub(value);
+          balances[to] = balances[to].add(value);
+        }
       }
     }
   });
 
+  return balances;
+}
+
+const getRollupBalance = async () => {
+  // @ts-ignore
+  const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+  const signer = provider.getSigner()
+
+  const balances = await getBalances();
+
   const address = await signer.getAddress();
-  return balances[address];
+
+  return balances[address.toLowerCase()] || 0;
 }
 
 const RollupBalance = () => {
