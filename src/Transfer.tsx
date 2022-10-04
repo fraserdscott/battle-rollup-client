@@ -7,7 +7,7 @@ import { abi } from "./out/Rollup.sol/Rollup.json";
 
 const transfer = async (to: string, value: BigNumber) => {
   // @ts-ignore
-  const provider = new ethers.providers.Web3Provider(window.ethereum)
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
 
   await provider.send("eth_requestAccounts", []);
 
