@@ -59,8 +59,12 @@ const getRollupBalance = async () => {
         balances[to] = BigNumber.from(0);
       }
 
-      balances[e.args.from] = balances[e.args.from].sub(BigNumber.from(e.args.value));
-      balances[to] = balances[to].add(BigNumber.from(e.args.value));
+      const value = BigNumber.from(e.args.value);
+
+      if (balances[e.args.from].gte(value)) {
+        balances[e.args.from] = balances[e.args.from].sub(value);
+        balances[to] = balances[to].add(value);
+      }
     }
   });
 
