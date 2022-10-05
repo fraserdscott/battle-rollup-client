@@ -6,6 +6,7 @@ import Withdraw from './Withdraw';
 import { useState } from 'react';
 import Balances from './Balances';
 import Expiry from './Expiry';
+import { ethers } from 'ethers';
 
 const mapping = {
   0: <Deposit />,
@@ -36,7 +37,12 @@ function App() {
               <button style={action === 1 ? { backgroundColor: "grey", color: "white" } : {}} onClick={() => setAction(1)}>Transfer</button>
               <button style={action === 2 ? { backgroundColor: "grey", color: "white" } : {}} onClick={() => setAction(2)}>Withdraw</button>
             </div>
-            <button onClick={() => {
+            <button onClick={async () => {
+              //@ts-ignore
+              const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+              await provider.send("eth_requestAccounts", []);
+
               //@ts-ignore
               window.ethereum.request({
                 method: "wallet_addEthereumChain",
@@ -51,7 +57,8 @@ function App() {
                   },
                 }]
               });
-            }}>Switch network
+            }}>
+              Connect
             </button>
           </div>
           <div style={{ padding: 20 }}>
