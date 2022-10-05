@@ -1,6 +1,6 @@
 
 import './App.css';
-import { BigNumber, ethers } from "ethers";
+import { ethers } from "ethers";
 import { useEffect, useState } from 'react';
 import { abi } from "./out/Rollup.sol/Rollup.json";
 import { ROLLUP_ADDRESS } from './Withdraw';
@@ -16,7 +16,7 @@ const getExpiry = async () => {
   return contract.expiry();
 }
 
-export const Balances = () => {
+export const Expiry = () => {
   const [expiry, setExpiry] = useState(0);
 
   useEffect(() => {
@@ -24,10 +24,8 @@ export const Balances = () => {
   });
 
   return (
-    <div>
-      <div>The rollup will freeze at {new Date(expiry * 1000)}</div>
-    </div>
+    <div><i>The rollup will freeze at {new Date(expiry * 1000).toLocaleString()}.</i></div>
   )
 }
 
-export default Balances;
+export default Expiry;

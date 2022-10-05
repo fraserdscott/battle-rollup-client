@@ -17,30 +17,32 @@ export const getBalances = async () => {
 
   let balances: Record<string, BigNumber> = {};
   events.map(e => {
-    if (e.event === "Deposit") {
-      const to = e.args.to.toLowerCase();
-      if (!balances[to]) {
-        balances[to] = BigNumber.from(0);
-      }
+    if (e.args) {
+      if (e.event === "Deposit") {
+        const to = e.args.to.toLowerCase();
+        if (!balances[to]) {
+          balances[to] = BigNumber.from(0);
+        }
 
-      balances[to] = balances[to].add(BigNumber.from(e.args.value));
-    } else if (e.event === "Transfer") {
-      const from = e.args.from.toLowerCase();
-      if (!balances[from]) {
-        balances[from] = BigNumber.from(0);
-      }
+        balances[to] = balances[to].add(BigNumber.from(e.args.value));
+      } else if (e.event === "Transfer") {
+        const from = e.args.from.toLowerCase();
+        if (!balances[from]) {
+          balances[from] = BigNumber.from(0);
+        }
 
-      const to = (e.args.to.slice(0, 2) + e.args.to.slice(26)).toLowerCase();
+        const to = (e.args.to.slice(0, 2) + e.args.to.slice(26)).toLowerCase();
 
-      if (!balances[to]) {
-        balances[to] = BigNumber.from(0);
-      }
+        if (!balances[to]) {
+          balances[to] = BigNumber.from(0);
+        }
 
-      const value = BigNumber.from(e.args.value);
+        const value = BigNumber.from(e.args.value);
 
-      if (balances[from].gte(value)) {
-        balances[from] = balances[from].sub(value);
-        balances[to] = balances[to].add(value);
+        if (balances[from].gte(value)) {
+          balances[from] = balances[from].sub(value);
+          balances[to] = balances[to].add(value);
+        }
       }
     }
   });
@@ -69,7 +71,7 @@ const RollupBalance = () => {
     getRollupBalance().then((b) => setBalance(b));
   }, []);
 
-  return <div>Rollup balance: {ethers.utils.formatEther(balance)} ETH</div>
+  return <div><b>Rollup balance:</b> {ethers.utils.formatEther(balance)} ETH</div>
 }
 
 const getSourceBalance = async () => {
@@ -90,8 +92,8 @@ export const Balances = () => {
 
   return (
     <div>
-      <div>Source balance: {ethers.utils.formatEther(sourceBalance)} ETH</div>
-      <RollupBalance />
+      <div style={{ border: 'solid', padding: 4 }}><b>Source balance:</b> {ethers.utils.formatEther(sourceBalance)} ETH</div>
+      <div style={{ border: 'solid', padding: 4 }}><RollupBalance /></div>
     </div>
   )
 }
