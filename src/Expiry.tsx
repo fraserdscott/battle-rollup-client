@@ -23,8 +23,10 @@ export const Expiry = () => {
     getExpiry().then(b => setExpiry(b))
   });
 
-  return (
+  return (<div>
     <div><i>The rollup will freeze at {new Date(expiry * 1000).toLocaleString()}.</i></div>
+    <div style={{ fontSize: 12 }}><i>the rollup can process up to 32 transactions. pls no spam</i></div>
+  </div>
   )
 }
 
