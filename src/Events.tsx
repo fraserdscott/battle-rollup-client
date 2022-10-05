@@ -3,6 +3,7 @@ import './App.css';
 import { ethers } from "ethers";
 import { useEffect, useState } from 'react';
 import { abi } from "./out/Rollup.sol/Rollup.json";
+import { ROLLUP_ADDRESS } from './Withdraw';
 
 const Events = () => {
   const [events, setEvents] = useState([]);
@@ -13,12 +14,10 @@ const Events = () => {
 
     const signer = provider.getSigner()
 
-    const address = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-
-    const contract = new ethers.Contract(address, abi, signer);
+    const contract = new ethers.Contract(ROLLUP_ADDRESS, abi, signer);
 
     contract.queryFilter({}).then((es: any) => setEvents(es));
-  });
+  }, []);
 
   return <div>
     <table>

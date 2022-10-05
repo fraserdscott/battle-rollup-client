@@ -4,6 +4,7 @@ import { BigNumber, ethers } from "ethers";
 import { useState } from 'react';
 
 import { abi } from "./out/Rollup.sol/Rollup.json";
+import { ROLLUP_ADDRESS } from './Withdraw';
 
 const transfer = async (to: string, value: BigNumber) => {
   // @ts-ignore
@@ -13,9 +14,7 @@ const transfer = async (to: string, value: BigNumber) => {
 
   const signer = provider.getSigner()
 
-  const address = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
-
-  const contract = new ethers.Contract(address, abi, signer);
+  const contract = new ethers.Contract(ROLLUP_ADDRESS, abi, signer);
 
   const ethValue = value.mul(BigNumber.from("1000000000000000000"));
 
@@ -28,9 +27,11 @@ const Transfer = () => {
   const [value, setValue] = useState(BigNumber.from(0));
 
   return (
-    <div>
-      <input onChange={event => setTo(event.target.value)} type="text" name="value" placeholder='Address' />
-      <input onChange={event => setValue(BigNumber.from(event.target.value))} type="number" name="value" placeholder='Value (ETH)' />
+    <div style={{ display: 'flex', flexDirection: "column", alignItems: 'center', borderStyle: "groove", padding: 20 }}>
+      <div>
+        <input onChange={event => setTo(event.target.value)} type="text" name="value" placeholder='Address' />
+        <input onChange={event => setValue(BigNumber.from(event.target.value))} type="number" name="value" placeholder='Value (ETH)' />
+      </div>
       <button onClick={() => transfer(to, value)}>Transfer</button>
     </div>
   )

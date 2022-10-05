@@ -1,11 +1,11 @@
 
 import './App.css';
 import { BigNumber, ethers } from "ethers";
-import { useState } from 'react';
 import { abi } from "./out/Rollup.sol/Rollup.json";
-import { getBalances } from './Deposit';
+import { getBalances } from './Balances';
+import { useEffect, useState } from 'react';
 
-const ROLLUP_ADDRESS = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+export const ROLLUP_ADDRESS = "0x721a1ecb9105f2335a8ea7505d343a5a09803a06";
 
 const withdraw = async () => {
   // @ts-ignore
@@ -18,9 +18,8 @@ const withdraw = async () => {
 
   const balances = await getBalances();
 
-  const address1 = ethers.utils.zeroPad("0xd7f0a106f8d065c48a5429fdecdc5e69b793f655", 32);
-  const balance1 = ethers.utils.hexZeroPad(ethers.utils.hexlify(BigNumber.from("5000000000000000000")), 32)
-
+  const address1 = ethers.utils.zeroPad("0x0000000000000000000000000000000000000000", 32);
+  const balance1 = ethers.utils.hexZeroPad(ethers.utils.hexlify(BigNumber.from("0")), 32)
   const address2 = ethers.utils.zeroPad("0x0000000000000000000000000000000000000000", 32);
   const balance2 = ethers.utils.hexZeroPad(ethers.utils.hexlify(BigNumber.from("0")), 32)
   const address3 = ethers.utils.zeroPad("0x0000000000000000000000000000000000000000", 32);
@@ -33,12 +32,28 @@ const withdraw = async () => {
 
   const pathElements = [hash1, hash4];
   const pathIndices = [0, 0];
-  contract.withdraw(to, balances[to], pathElements, pathIndices);
+  contract.withdraw(to, balances[to.toLowerCase()], pathElements, pathIndices);
 }
 
 const Withdraw = () => {
+  const [balance, setBalance] = useState(BigNumber.from(0));
+
+  useEffect(() => {
+
+    getBalances().then(async (bs) => {
+      // @ts-ignore
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+
+      const signer = provider.getSigner()
+
+      const to = await signer.getAddress();
+
+      setBalance(bs[to.toLowerCase()] || BigNumber.from(0));
+    });
+  });
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: "column", alignItems: 'center', borderStyle: "groove", padding: 20 }}>
+      <span>You are about to withdraw {ethers.utils.formatEther(balance)} ETH.</span>
       <button onClick={() => withdraw()}>Withdraw</button>
     </div>
   )
