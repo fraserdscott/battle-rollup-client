@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { abi } from "./out/Rollup.sol/Rollup.json";
 import { ROLLUP_ADDRESS } from './Withdraw';
 
-const getExpiry = async () => {
+export const getExpiry = async () => {
   // @ts-ignore
   const provider = new ethers.providers.Web3Provider(window.ethereum);
 

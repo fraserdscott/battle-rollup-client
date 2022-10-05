@@ -4,6 +4,7 @@ import { BigNumber, ethers } from "ethers";
 import { abi } from "./out/Rollup.sol/Rollup.json";
 import { getBalances } from './Balances';
 import { useEffect, useState } from 'react';
+import { getExpiry } from './Expiry';
 
 export const ROLLUP_ADDRESS = "0x721a1ecb9105f2335a8ea7505d343a5a09803a06";
 
@@ -37,9 +38,9 @@ const withdraw = async () => {
 
 const Withdraw = () => {
   const [balance, setBalance] = useState(BigNumber.from(0));
+  const [expiry, setExpiry] = useState(0);
 
   useEffect(() => {
-
     getBalances().then(async (bs) => {
       // @ts-ignore
       const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -49,12 +50,17 @@ const Withdraw = () => {
       const to = await signer.getAddress();
 
       setBalance(bs[to.toLowerCase()] || BigNumber.from(0));
+
+      getExpiry().then(e => setExpiry(e));
     });
   });
+
+  const open = Date.now() < expiry * 1000;
+
   return (
     <div style={{ display: 'flex', flexDirection: "column", alignItems: 'center', borderStyle: "groove", padding: 20 }}>
-      <span>You are about to withdraw {ethers.utils.formatEther(balance)} ETH.</span>
-      <button onClick={() => withdraw()}>Withdraw</button>
+      <span>{open ? `When the rollup is resolved, providing your balance has not changed, you will be able to withdraw ${ethers.utils.formatEther(balance)} ETH.` : `You are about to withdraw ${ethers.utils.formatEther(balance)} ETH.`}</span>
+      <button disabled={open} onClick={() => withdraw()}>Withdraw</button>
     </div>
   )
 }
